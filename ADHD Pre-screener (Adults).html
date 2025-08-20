@@ -95,6 +95,9 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-height: 90vh; overflow-y: auto;
         }
         .report-content { max-width: 800px; }
+        .score-bar-bg { background-color: #e5e7eb; border-radius: 8px; overflow: hidden; }
+        .score-bar { height: 24px; border-radius: 8px; transition: width 0.5s ease-out; }
+
     </style>
 </head>
 <body class="bg-gray-100 p-4 sm:p-6 md:p-8">
@@ -148,8 +151,13 @@
             </div>
             
             <footer class="mt-10 pt-6 border-t text-center text-xs text-gray-500 no-print">
-                <p class="font-bold">The Support Mentor, Part of The MentorSphere</p>
+                <div class="flex justify-center items-center gap-8 mb-4">
+                    <img src="https://raw.githubusercontent.com/TheMentorSphere/mentorsphere-branding/refs/heads/main/Support%20logo%20%5Bno%20background%5D.png" alt="The Support Mentor Logo" class="h-20">
+                    <img src="https://raw.githubusercontent.com/TheMentorSphere/mentorsphere-branding/refs/heads/main/ADHD%20logo%20%5Bno%20background%5D.png" alt="The ADHD Mentor Logo" class="h-20">
+                </div>
+                <p class="font-bold">The Support Mentor & The ADHD Mentor; Part of The MentorSphere</p>
                 <p>www.thementorsphere.co.uk | luke@thementorsphere.co.uk</p>
+                <p class="mt-4 text-gray-400 text-[10px]">ASRS v1.1 Screener developed by the World Health Organization (WHO) and the Workgroup on Adult ADHD.</p>
             </footer>
         </div>
     </div>
@@ -193,8 +201,13 @@
             <div id="report-item-responses" class="mb-6"></div>
             <div id="report-comments"></div>
             <footer class="mt-8 pt-6 border-t text-center text-xs text-gray-500">
-                <p class="font-bold">The Support Mentor, Part of The MentorSphere</p>
+                 <div class="flex justify-center items-center gap-8 mb-4">
+                    <img src="https://raw.githubusercontent.com/TheMentorSphere/mentorsphere-branding/refs/heads/main/Support%20logo%20%5Bno%20background%5D.png" alt="The Support Mentor Logo" class="h-20">
+                    <img src="https://raw.githubusercontent.com/TheMentorSphere/mentorsphere-branding/refs/heads/main/ADHD%20logo%20%5Bno%20background%5D.png" alt="The ADHD Mentor Logo" class="h-20">
+                </div>
+                <p class="font-bold">The Support Mentor & The ADHD Mentor; Part of The MentorSphere</p>
                 <p>www.thementorsphere.co.uk | luke@thementorsphere.co.uk</p>
+                <p class="mt-4 text-gray-400 text-[10px]">ASRS v1.1 Screener developed by the World Health Organization (WHO) and the Workgroup on Adult ADHD.</p>
             </footer>
         </div>
     </div>
@@ -209,30 +222,49 @@
             { text: "How often do you fidget or squirm with your hands or feet when you have to sit down for a long time?", type: 'part_a', significant: [3, 4] },
             { text: "How often do you feel overly active and compelled to do things, like you were driven by a motor?", type: 'part_a', significant: [3, 4] },
             // Part B
-            { text: "How often do you make careless mistakes when you have to work on a boring or difficult project?", type: 'part_b' },
-            { text: "How often do you have difficulty keeping your attention when you are doing boring or repetitive work?", type: 'part_b' },
-            { text: "How often do you have difficulty concentrating on what people say, even when they are speaking to you directly?", type: 'part_b' },
-            { text: "How often do you misplace or have difficulty finding things at home or at work?", type: 'part_b' },
-            { text: "How often are you distracted by activity or noise around you?", type: 'part_b' },
-            { text: "How often do you leave your seat in meetings or other situations in which you are expected to remain seated?", type: 'part_b' },
-            { text: "How often do you feel restless or fidgety?", type: 'part_b' },
-            { text: "How often do you have difficulty unwinding and relaxing when you have time to yourself?", type: 'part_b' },
-            { text: "How often do you find yourself talking too much in social situations?", type: 'part_b' },
-            { text: "When you’re in a conversation, how often do you find yourself finishing the sentences of the people you are talking to before they can finish them themselves?", type: 'part_b' },
-            { text: "How often do you have difficulty waiting your turn in situations when turn taking is required?", type: 'part_b' },
-            { text: "How often do you interrupt others when they are busy?", type: 'part_b' }
+            { text: "How often do you make careless mistakes when you have to work on a boring or difficult project?", type: 'part_b_inattention' },
+            { text: "How often do you have difficulty keeping your attention when you are doing boring or repetitive work?", type: 'part_b_inattention' },
+            { text: "How often do you have difficulty concentrating on what people say, even when they are speaking to you directly?", type: 'part_b_inattention' },
+            { text: "How often do you misplace or have difficulty finding things at home or at work?", type: 'part_b_inattention' },
+            { text: "How often are you distracted by activity or noise around you?", type: 'part_b_inattention' },
+            { text: "How often do you leave your seat in meetings or other situations in which you are expected to remain seated?", type: 'part_b_hyperactivity' },
+            { text: "How often do you feel restless or fidgety?", type: 'part_b_hyperactivity' },
+            { text: "How often do you have difficulty unwinding and relaxing when you have time to yourself?", type: 'part_b_hyperactivity' },
+            { text: "How often do you find yourself talking too much in social situations?", type: 'part_b_hyperactivity' },
+            { text: "When you’re in a conversation, how often do you find yourself finishing the sentences of the people you are talking to before they can finish them themselves?", type: 'part_b_hyperactivity' },
+            { text: "How often do you have difficulty waiting your turn in situations when turn taking is required?", type: 'part_b_hyperactivity' },
+            { text: "How often do you interrupt others when they are busy?", type: 'part_b_hyperactivity' }
         ];
 
         const symptomsContainer = document.getElementById('symptoms-container');
         let currentType = '';
 
         symptoms.forEach((symptom, index) => {
-            if (symptom.type !== currentType) {
-                currentType = symptom.type;
-                const header = document.createElement('div');
+            if (symptom.type.startsWith('part_b') && !symptoms[index-1].type.startsWith('part_b')) {
+                currentType = 'part_b';
+                 const header = document.createElement('div');
                 header.className = 'p-4 bg-[var(--brand-secondary)] text-white font-semibold text-xl';
-                let title = currentType === 'part_a' ? 'Part A: Screener' : 'Part B: Symptom Frequency';
-                header.textContent = title;
+                header.textContent = 'Part B: Symptom Frequency';
+                symptomsContainer.appendChild(header);
+
+                const labelRow = document.createElement('div');
+                labelRow.className = 'question-row bg-gray-200 font-semibold';
+                labelRow.innerHTML = `
+                    <div class="question-text"></div>
+                    <div class="rating-labels">
+                        <span>Never</span>
+                        <span>Rarely</span>
+                        <span>Sometimes</span>
+                        <span>Often</span>
+                        <span>Very Often</span>
+                    </div>
+                `;
+                symptomsContainer.appendChild(labelRow);
+            } else if (index === 0) {
+                 currentType = 'part_a';
+                 const header = document.createElement('div');
+                header.className = 'p-4 bg-[var(--brand-secondary)] text-white font-semibold text-xl';
+                header.textContent = 'Part A: Screener';
                 symptomsContainer.appendChild(header);
 
                 const labelRow = document.createElement('div');
@@ -249,6 +281,7 @@
                 `;
                 symptomsContainer.appendChild(labelRow);
             }
+
             const row = document.createElement('div');
             row.className = 'question-row';
             row.classList.add((index) % 2 === 0 ? 'bg-white' : 'bg-subtle');
@@ -291,7 +324,7 @@
         
         function calculateScores() {
             let scores = {
-                partA_score: 0,
+                partA_count: 0,
                 partB_inattention_often: 0,
                 partB_hyperactivity_often: 0,
                 responses: []
@@ -305,11 +338,11 @@
                     if (radio.checked) {
                         const score = parseInt(radio.value);
                         if (symptom.type === 'part_a' && symptom.significant.includes(score)) {
-                            scores.partA_score++;
+                            scores.partA_count++;
                         }
-                        if (symptom.type === 'part_b' && score >= 3) { // Often or Very Often
-                            if (index >= 6 && index <= 10) scores.partB_inattention_often++;
-                            if (index >= 11 && index <= 17) scores.partB_hyperactivity_often++;
+                        if (symptom.type.startsWith('part_b') && score >= 3) { // Often or Very Often
+                            if (symptom.type === 'part_b_inattention') scores.partB_inattention_often++;
+                            if (symptom.type === 'part_b_hyperactivity') scores.partB_hyperactivity_often++;
                         }
                         scores.responses.push({ text: symptom.text, response: ratingLabels[score] });
                         answered = true;
@@ -321,21 +354,38 @@
         }
 
         function displayScores(scores) {
-            const isScreenerPositive = scores.partA_score >= 4;
+            const isScreenerPositive = scores.partA_count >= 4;
 
             const screenerResultHTML = `
-                <div class="p-4 rounded-lg text-center ${isScreenerPositive ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">
-                    <h4 class="font-bold text-lg">Part A Screener Result</h4>
-                    <p class="text-2xl font-bold">${isScreenerPositive ? 'POSITIVE' : 'NEGATIVE'}</p>
-                    <p class="text-sm">(${scores.partA_score} of 6 symptoms in the clinically significant range)</p>
+                <div class="p-4 rounded-lg bg-subtle">
+                     <h4 class="font-bold text-lg text-accent">Part A: Screener Result</h4>
+                     <div class="mt-2">
+                        <div class="flex justify-between items-center mb-1 text-sm">
+                            <span>Score: <strong>${scores.partA_count} / 6</strong></span>
+                            <span>Result: <strong class="${isScreenerPositive ? 'text-red-600' : 'text-green-600'}">${isScreenerPositive ? 'POSITIVE' : 'NEGATIVE'}</strong></span>
+                        </div>
+                        <div class="score-bar-bg">
+                            <div class="score-bar ${isScreenerPositive ? 'bg-red-600' : 'bg-green-500'}" style="width: ${(scores.partA_count/6)*100}%"></div>
+                        </div>
+                    </div>
                 </div>
             `;
 
             const partBResultHTML = `
                 <div class="p-4 bg-subtle rounded-lg">
                     <h4 class="font-bold text-lg text-accent">Part B: Further Symptom Enquiry</h4>
-                    <p class="mt-2"><strong>Inattention Symptoms (Often/Very Often):</strong> ${scores.partB_inattention_often} / 5</p>
-                    <p><strong>Hyperactivity/Impulsivity Symptoms (Often/Very Often):</strong> ${scores.partB_hyperactivity_often} / 7</p>
+                     <div class="mt-2">
+                        <p class="text-sm mb-1">Inattention Symptoms (Often/Very Often): <strong>${scores.partB_inattention_often} / 5</strong></p>
+                        <div class="score-bar-bg">
+                            <div class="score-bar bg-blue-500" style="width: ${(scores.partB_inattention_often/5)*100}%"></div>
+                        </div>
+                    </div>
+                     <div class="mt-3">
+                        <p class="text-sm mb-1">Hyperactivity/Impulsivity Symptoms (Often/Very Often): <strong>${scores.partB_hyperactivity_often} / 7</strong></p>
+                        <div class="score-bar-bg">
+                            <div class="score-bar bg-blue-500" style="width: ${(scores.partB_hyperactivity_often/7)*100}%"></div>
+                        </div>
+                    </div>
                 </div>
             `;
 
@@ -366,7 +416,7 @@
             document.getElementById('report-comments').innerHTML = `<h3 class="text-xl font-bold text-accent mb-2 mt-6">Self-Report Notes</h3><div class="p-4 bg-gray-100 rounded-md" style="white-space: pre-wrap; word-wrap: break-word;">${comments ? `"${comments}"` : 'No comments provided.'}</div>`;
 
             const clientName = document.getElementById('client-name').value || 'N/A';
-            const assessmentDate = document.getElementById('assessment-date').value || 'N/A';
+            const assessmentDate = document.getElementById('assessment-date').value ? new Date(document.getElementById('assessment-date').value).toLocaleDateString('en-GB') : 'N/A';
             const infoHTML = `<strong>Client:</strong> ${clientName} | <strong>Date:</strong> ${assessmentDate}`;
             document.getElementById('printable-info').innerHTML = infoHTML;
             document.getElementById('report-info').innerHTML = infoHTML;
@@ -401,4 +451,3 @@
     </script>
 </body>
 </html>
-
