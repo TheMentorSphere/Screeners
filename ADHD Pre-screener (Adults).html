@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The MentorSphere - ASRS-v1.1 Adult ADHD Self-Report Scale</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        /* --- The MentorSphere Branding --- */
+        :root {
+            --brand-primary: #f97316;       /* Vibrant Orange */
+            --brand-primary-hover: #ea580c;  /* Darker Orange */
+            --brand-secondary: #0ea5e9;     /* Bright Blue */
+            --brand-secondary-hover: #0284c7;/* Darker Blue */
+            --brand-accent: #0f172a;       /* Dark text colour for contrast */
+            --brand-subtle-bg: #fff7ed;     /* Light Orange/Cream background */
+            --brand-yellow: #facc15;      /* Vibrant Yellow */
+        }
+        /* ---------------------------------- */
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+        }
+        
+        body.modal-open {
+            overflow: hidden;
+        }
+
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .no-print { display: none; }
+            
+            body.print-summary-mode > *:not(.modal-backdrop),
+            body.print-report-mode > *:not(#report-modal) {
+                display: none;
+            }
+            body.print-summary-mode .modal-backdrop,
+            body.print-report-mode #report-modal {
+                position: static; background: none; display: block;
+            }
+            body.print-summary-mode .modal-content,
+            body.print-report-mode .report-content {
+                box-shadow: none; border: none; max-height: none; overflow: visible;
+                padding: 0; width: 100%; max-width: 100%;
+            }
+             body.print-summary-mode .printable-header { display: block !important; }
+            body.print-summary-mode .modal-buttons { display: none; }
+        }
+        
+        .rating-labels, .rating-group {
+            display: grid; gap: 0.5rem; text-align: center; width: 400px; 
+        }
+        .rating-labels { grid-template-columns: repeat(5, 1fr); }
+        .rating-group { grid-template-columns: repeat(5, 1fr); }
+
+        .question-row {
+            display: grid; grid-template-columns: 1fr auto; align-items: center;
+            border-bottom: 1px solid #e5e7eb; padding: 1rem 0.75rem; font-size: 1.05rem;
+        }
+        .question-text { text-align: left; padding-right: 1rem; }
+
+        .btn-primary {
+            background-color: var(--brand-primary); color: white; transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .btn-primary:hover {
+            background-color: var(--brand-primary-hover); transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        
+        .text-accent { color: var(--brand-accent); }
+        .bg-subtle { background-color: var(--brand-subtle-bg); }
+        .form-radio {
+            appearance: none; border: 2px solid #ccc; border-radius: 50%; width: 24px; height: 24px;
+            transition: all 0.2s; cursor: pointer; position: relative; margin: auto;
+        }
+        .form-radio:checked { border-color: var(--brand-primary); background-color: var(--brand-primary); }
+        .form-radio:checked::after {
+            content: ''; position: absolute; top: 50%; left: 50%; width: 10px; height: 10px;
+            border-radius: 50%; background: white; transform: translate(-50%, -50%);
+        }
+        input:focus, textarea:focus { --tw-ring-color: var(--brand-primary); }
+        .modal-backdrop {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);
+            display: flex; justify-content: center; align-items: center; z-index: 1000;
+        }
+        .modal-content, .report-content {
+            background: white; padding: 2rem; border-radius: 1rem; max-width: 600px; width: 90%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-height: 90vh; overflow-y: auto;
+        }
+        .report-content { max-width: 800px; }
+    </style>
+</head>
+<body class="bg-gray-100 p-4 sm:p-6 md:p-8">
+    <div class="max-w-4xl mx-auto bg-white p-0 rounded-xl shadow-2xl overflow-hidden">
+        <header class="text-center p-6 bg-gradient-to-r from-[var(--brand-primary)] to-[var(--brand-yellow)]">
+            <img id="logo" src="https://i.imgur.com/iBGcm4U.png" alt="The MentorSphere Logo" class="mx-auto mb-2 h-24 drop-shadow-lg">
+            <h2 class="text-4xl font-bold text-white drop-shadow-md">The MentorSphere</h2>
+            <p class="text-lg text-white/90 italic mt-1 drop-shadow-sm">"Rethinking learning, one step at a time."</p>
+            <h3 class="text-xl font-semibold text-white/95 mt-4 drop-shadow">ASRS-v1.1 Adult ADHD Self-Report Scale</h3>
+        </header>
+
+        <div class="p-6 sm:p-8">
+            <!-- Patient Information -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div>
+                    <label for="client-name" class="block text-sm font-medium text-gray-700">Name:</label>
+                    <input type="text" id="client-name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm">
+                </div>
+                <div>
+                    <label for="assessment-date" class="block text-sm font-medium text-gray-700">Date:</label>
+                    <input type="date" id="assessment-date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm">
+                </div>
+            </div>
+
+            <!-- Instructions -->
+            <div class="mb-8 bg-subtle p-4 rounded-lg border border-orange-200">
+                <h2 class="font-semibold text-xl text-accent">Instructions</h2>
+                <p class="text-gray-700 mt-2">Please answer the questions below, rating yourself on how you have felt and conducted yourself over the past <strong>6 months</strong>.</p>
+            </div>
+
+            <!-- Questions Section -->
+            <form id="asrs-form">
+                <div class="rounded-lg overflow-hidden border border-gray-200">
+                    <div id="symptoms-container"></div>
+                </div>
+
+                <div class="mt-8">
+                    <label for="comments" class="block text-lg font-medium text-gray-700">Comments:</label>
+                    <textarea id="comments" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm sm:text-sm" placeholder="Add any additional comments here..."></textarea>
+                </div>
+            </form>
+
+            <!-- Action Buttons -->
+            <div class="mt-8 text-center no-print flex justify-center gap-4">
+                <button id="score-button" class="btn-primary inline-flex items-center px-8 py-3 border border-transparent text-lg font-medium rounded-md shadow-sm">
+                    Score Screener
+                </button>
+                <button id="print-report-button" class="bg-gray-600 hover:bg-gray-700 text-white inline-flex items-center px-8 py-3 border border-transparent text-lg font-medium rounded-md shadow-sm">
+                    Print Full Report
+                </button>
+            </div>
+            
+            <footer class="mt-10 pt-6 border-t text-center text-xs text-gray-500 no-print">
+                <p class="font-bold">The Support Mentor, Part of The MentorSphere</p>
+                <p>www.thementorsphere.co.uk | luke@thementorsphere.co.uk</p>
+            </footer>
+        </div>
+    </div>
+    
+    <!-- Scoring Modal -->
+    <div id="results-modal" class="modal-backdrop hidden no-print">
+        <div class="modal-content">
+            <div id="printable-summary">
+                <div class="text-center mb-4 printable-header" style="display: none;">
+                     <img src="https://i.imgur.com/iBGcm4U.png" alt="The MentorSphere Logo" class="mx-auto mb-2 h-16">
+                     <h2 class="text-2xl font-bold text-accent">Screening Results Summary</h2>
+                     <div id="printable-info" class="text-sm text-gray-600 mt-2"></div>
+                </div>
+                <div class="text-center mb-4 non-printable">
+                    <img src="https://i.imgur.com/iBGcm4U.png" alt="The MentorSphere Logo" class="mx-auto mb-2 h-16">
+                    <h2 class="text-2xl font-bold text-accent">Screening Results</h2>
+                </div>
+                <div id="score-output" class="space-y-6"></div>
+            </div>
+            <div class="mt-6 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md non-printable" role="alert">
+                <p class="font-bold">Clinical Disclaimer</p>
+                <p class="text-sm">These results are based on an automated scoring of a screening tool and DO NOT constitute a diagnosis. This information must be interpreted by a qualified clinician in the context of a comprehensive evaluation.</p>
+            </div>
+            <div class="mt-6 text-center flex justify-center gap-4 modal-buttons">
+                <button id="print-summary-btn" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-md">Print Summary</button>
+                <button id="close-modal-btn" class="btn-primary px-6 py-2 rounded-md">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Full Report Modal (for printing) -->
+    <div id="report-modal" class="hidden">
+        <div class="report-content">
+            <div class="text-center mb-6">
+                 <img src="https://i.imgur.com/iBGcm4U.png" alt="The MentorSphere Logo" class="mx-auto mb-2 h-20">
+                 <h2 class="text-3xl font-bold text-accent">ASRS-v1.1 Screening Report</h2>
+                 <div id="report-info" class="text-md text-gray-600 mt-2"></div>
+            </div>
+            <div id="report-score-summary" class="space-y-6 mb-6"></div>
+            <div id="report-summary-findings" class="mb-6"></div>
+            <div id="report-item-responses" class="mb-6"></div>
+            <div id="report-comments"></div>
+            <footer class="mt-8 pt-6 border-t text-center text-xs text-gray-500">
+                <p class="font-bold">The Support Mentor, Part of The MentorSphere</p>
+                <p>www.thementorsphere.co.uk | luke@thementorsphere.co.uk</p>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        const symptoms = [
+            // Part A
+            { text: "How often do you have trouble wrapping up the final details of a project, once the challenging parts have been done?", type: 'part_a', significant: [2, 3, 4] },
+            { text: "How often do you have difficulty getting things in order when you have to do a task that requires organisation?", type: 'part_a', significant: [2, 3, 4] },
+            { text: "How often do you have problems remembering appointments or obligations?", type: 'part_a', significant: [2, 3, 4] },
+            { text: "When you have a task that requires a lot of thought, how often do you avoid or delay getting started?", type: 'part_a', significant: [3, 4] },
+            { text: "How often do you fidget or squirm with your hands or feet when you have to sit down for a long time?", type: 'part_a', significant: [3, 4] },
+            { text: "How often do you feel overly active and compelled to do things, like you were driven by a motor?", type: 'part_a', significant: [3, 4] },
+            // Part B
+            { text: "How often do you make careless mistakes when you have to work on a boring or difficult project?", type: 'part_b' },
+            { text: "How often do you have difficulty keeping your attention when you are doing boring or repetitive work?", type: 'part_b' },
+            { text: "How often do you have difficulty concentrating on what people say, even when they are speaking to you directly?", type: 'part_b' },
+            { text: "How often do you misplace or have difficulty finding things at home or at work?", type: 'part_b' },
+            { text: "How often are you distracted by activity or noise around you?", type: 'part_b' },
+            { text: "How often do you leave your seat in meetings or other situations in which you are expected to remain seated?", type: 'part_b' },
+            { text: "How often do you feel restless or fidgety?", type: 'part_b' },
+            { text: "How often do you have difficulty unwinding and relaxing when you have time to yourself?", type: 'part_b' },
+            { text: "How often do you find yourself talking too much in social situations?", type: 'part_b' },
+            { text: "When you’re in a conversation, how often do you find yourself finishing the sentences of the people you are talking to before they can finish them themselves?", type: 'part_b' },
+            { text: "How often do you have difficulty waiting your turn in situations when turn taking is required?", type: 'part_b' },
+            { text: "How often do you interrupt others when they are busy?", type: 'part_b' }
+        ];
+
+        const symptomsContainer = document.getElementById('symptoms-container');
+        let currentType = '';
+
+        symptoms.forEach((symptom, index) => {
+            if (symptom.type !== currentType) {
+                currentType = symptom.type;
+                const header = document.createElement('div');
+                header.className = 'p-4 bg-[var(--brand-secondary)] text-white font-semibold text-xl';
+                let title = currentType === 'part_a' ? 'Part A: Screener' : 'Part B: Symptom Frequency';
+                header.textContent = title;
+                symptomsContainer.appendChild(header);
+
+                const labelRow = document.createElement('div');
+                labelRow.className = 'question-row bg-gray-200 font-semibold';
+                labelRow.innerHTML = `
+                    <div class="question-text"></div>
+                    <div class="rating-labels">
+                        <span>Never</span>
+                        <span>Rarely</span>
+                        <span>Sometimes</span>
+                        <span>Often</span>
+                        <span>Very Often</span>
+                    </div>
+                `;
+                symptomsContainer.appendChild(labelRow);
+            }
+            const row = document.createElement('div');
+            row.className = 'question-row';
+            row.classList.add((index) % 2 === 0 ? 'bg-white' : 'bg-subtle');
+            const questionText = document.createElement('div');
+            questionText.className = 'question-text text-gray-800';
+            questionText.textContent = `${index + 1}. ${symptom.text}`;
+            const ratingGroup = document.createElement('div');
+            ratingGroup.className = 'rating-group';
+            for (let i = 0; i < 5; i++) {
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = `symptom-${index}`;
+                radio.value = i;
+                radio.className = 'form-radio';
+                ratingGroup.appendChild(radio);
+            }
+            row.appendChild(questionText);
+            row.appendChild(ratingGroup);
+            symptomsContainer.appendChild(row);
+        });
+
+        document.getElementById('assessment-date').valueAsDate = new Date();
+        
+        const scoreButton = document.getElementById('score-button');
+        const resultsModal = document.getElementById('results-modal');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const printSummaryBtn = document.getElementById('print-summary-btn');
+        const printReportBtn = document.getElementById('print-report-button');
+        const scoreOutput = document.getElementById('score-output');
+
+        function openModal() {
+            resultsModal.classList.remove('hidden');
+            document.body.classList.add('modal-open');
+        }
+
+        function closeModal() {
+            resultsModal.classList.add('hidden');
+            document.body.classList.remove('modal-open');
+        }
+        
+        function calculateScores() {
+            let scores = {
+                partA_score: 0,
+                partB_inattention_often: 0,
+                partB_hyperactivity_often: 0,
+                responses: []
+            };
+            const ratingLabels = ["Never", "Rarely", "Sometimes", "Often", "Very Often"];
+
+            symptoms.forEach((symptom, index) => {
+                const radios = document.getElementsByName(`symptom-${index}`);
+                let answered = false;
+                for (const radio of radios) {
+                    if (radio.checked) {
+                        const score = parseInt(radio.value);
+                        if (symptom.type === 'part_a' && symptom.significant.includes(score)) {
+                            scores.partA_score++;
+                        }
+                        if (symptom.type === 'part_b' && score >= 3) { // Often or Very Often
+                            if (index >= 6 && index <= 10) scores.partB_inattention_often++;
+                            if (index >= 11 && index <= 17) scores.partB_hyperactivity_often++;
+                        }
+                        scores.responses.push({ text: symptom.text, response: ratingLabels[score] });
+                        answered = true;
+                    }
+                }
+                if (!answered) scores.responses.push({ text: symptom.text, response: "Not Answered" });
+            });
+            return scores;
+        }
+
+        function displayScores(scores) {
+            const isScreenerPositive = scores.partA_score >= 4;
+
+            const screenerResultHTML = `
+                <div class="p-4 rounded-lg text-center ${isScreenerPositive ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}">
+                    <h4 class="font-bold text-lg">Part A Screener Result</h4>
+                    <p class="text-2xl font-bold">${isScreenerPositive ? 'POSITIVE' : 'NEGATIVE'}</p>
+                    <p class="text-sm">(${scores.partA_score} of 6 symptoms in the clinically significant range)</p>
+                </div>
+            `;
+
+            const partBResultHTML = `
+                <div class="p-4 bg-subtle rounded-lg">
+                    <h4 class="font-bold text-lg text-accent">Part B: Further Symptom Enquiry</h4>
+                    <p class="mt-2"><strong>Inattention Symptoms (Often/Very Often):</strong> ${scores.partB_inattention_often} / 5</p>
+                    <p><strong>Hyperactivity/Impulsivity Symptoms (Often/Very Often):</strong> ${scores.partB_hyperactivity_often} / 7</p>
+                </div>
+            `;
+
+            const visualSummaryHTML = screenerResultHTML + partBResultHTML;
+            scoreOutput.innerHTML = visualSummaryHTML;
+            
+            // Populate full report
+            document.getElementById('report-score-summary').innerHTML = visualSummaryHTML;
+
+            let findings = '<h3 class="text-xl font-bold text-accent mb-2">Summary of Findings</h3>';
+            findings += `<div class="p-4 bg-gray-100 rounded-md space-y-3">
+                <p>The ASRS-v1.1 screener (Part A) is considered <strong>${isScreenerPositive ? 'POSITIVE' : 'NEGATIVE'}</strong>. A positive result indicates that the reported symptoms are consistent with ADHD in adults and a more comprehensive diagnostic evaluation is highly recommended.</p>
+                <p>The responses in Part B provide additional clinical information regarding the frequency of other symptoms associated with ADHD.</p>
+                <div class="pt-3 mt-3 border-t text-sm text-gray-600">
+                    <strong>Scoring Key:</strong> Part A is positive if 4 or more of the first 6 questions are scored in the clinically significant range.
+                </div>
+            </div>`;
+            document.getElementById('report-summary-findings').innerHTML = findings;
+
+            let responsesHTML = '<h3 class="text-xl font-bold text-accent mb-2 mt-6">Item-by-Item Responses</h3><div class="space-y-1 text-sm">';
+            scores.responses.forEach((resp, index) => {
+                responsesHTML += `<div class="p-2 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} rounded-md flex justify-between"><span>${index + 1}. ${resp.text}</span><strong class="text-right ml-4">${resp.response}</strong></div>`;
+            });
+            responsesHTML += '</div>';
+            document.getElementById('report-item-responses').innerHTML = responsesHTML;
+
+            const comments = document.getElementById('comments').value;
+            document.getElementById('report-comments').innerHTML = `<h3 class="text-xl font-bold text-accent mb-2 mt-6">Self-Report Notes</h3><div class="p-4 bg-gray-100 rounded-md" style="white-space: pre-wrap; word-wrap: break-word;">${comments ? `"${comments}"` : 'No comments provided.'}</div>`;
+
+            const clientName = document.getElementById('client-name').value || 'N/A';
+            const assessmentDate = document.getElementById('assessment-date').value || 'N/A';
+            const infoHTML = `<strong>Client:</strong> ${clientName} | <strong>Date:</strong> ${assessmentDate}`;
+            document.getElementById('printable-info').innerHTML = infoHTML;
+            document.getElementById('report-info').innerHTML = infoHTML;
+
+            openModal();
+        }
+
+        scoreButton.addEventListener('click', () => displayScores(calculateScores()));
+        printReportBtn.addEventListener('click', () => {
+             displayScores(calculateScores()); // Ensure report is populated
+             document.body.classList.add('print-report-mode');
+             window.print();
+        });
+        
+        closeModalBtn.addEventListener('click', closeModal);
+        resultsModal.addEventListener('click', (e) => {
+            if(e.target === resultsModal) {
+                 closeModal();
+            }
+        });
+
+        printSummaryBtn.addEventListener('click', () => {
+            document.body.classList.add('print-summary-mode');
+            window.print();
+        });
+        
+        window.addEventListener('afterprint', () => {
+            document.body.classList.remove('print-summary-mode');
+            document.body.classList.remove('print-report-mode');
+        });
+
+    </script>
+</body>
+</html>
+
